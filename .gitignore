@@ -1,28 +1,61 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
 
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+# Production builds
+dist/
+build/
+out/
 
-# Environment files
-/.env
-
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
-
-# TypeScript cache
+# TypeScript
 *.tsbuildinfo
 
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
 # Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# NNUE Training Data (arquivos grandes)
+training/positions/*.csv
+training/positions/*.txt
+training/datasets/
+*.bin
+*.nnue
+
+# Opening Books (se forem muito grandes)
+data/openings/*.pgn
+data/openings/polyglot/*.bin
+
+# Tablebases (extremamente grandes)
+data/tablebases/
+*.rtbw
+*.rtbz
+
+# Temporary files
+*.tmp
+.cache/
+.parcel-cache/
+.next/
