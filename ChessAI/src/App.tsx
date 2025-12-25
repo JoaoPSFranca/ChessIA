@@ -1,18 +1,34 @@
-import { useState } from 'react'
-import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 import { getCustomPieces } from './utils/customPieces'
+import { useChessGame } from './hooks/useChessGame';
 
 function App() {
-  const [game] = useState(new Chess())
+  const { 
+    game,
+    position, 
+    moveHistory, 
+    gameStatus, 
+    orientation,
+    makeMove, 
+    undoMove, 
+    resetGame, 
+    flipBoard 
+  } = useChessGame();
 
+  const handlePieceDrop = (sourceSquare: string, targetSquare: string) => {
+    return makeMove(sourceSquare, targetSquare);
+  };
+
+  // Board Config
   const chessboardOptions = {
     id: 'WizardChess',
     position: game.fen(),
     pieces: getCustomPieces(),
-    boardOrientation: 'white' as const,
+    boardOrientation: orientation,
     darkSquareStyle: { backgroundColor: '#2c2539' },
     lightSquareStyle: { backgroundColor: '#574c63' },
+    onPieceDrop: handlePieceDrop,
+    arePiecesDraggable: true,
   };
 
   return (
