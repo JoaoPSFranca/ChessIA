@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  font-family: 'Georgia', serif;
+}
+
+/* Efeito hover nas peças */
+[data-piece]:hover {
+  filter: brightness(1.2) drop-shadow(0 0 10px rgba(240, 217, 181, 0.5));
+  cursor: grab;
+  transform: scale(1.05);
+}
+
+[data-piece]:active {
+  cursor: grabbing;
+}
