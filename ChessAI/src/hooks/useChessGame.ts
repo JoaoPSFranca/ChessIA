@@ -1,157 +1,110 @@
-import { useState } from 'react';
-import { Chess } from 'chess.js';
+import { useState, useEffect } from 'react'
+import { Chess } from 'chess.js'
+import { makeRandomMove } from './useEngine'
 
 export const useChessGame = () => {
-  const [game, setGame] = useState(new Chess());
-  const [moveLog, setMoveLog] = useState<string[]>([]);
-  const [orientation, setOrientation] = useState<'white' | 'black'>(Math.random() < 0.5 ? 'white' : 'black');
+  const [game, setGame] = useState(new Chess())
+  const [moveLog, setMoveLog] = useState<string[]>([])
+  const [orientation, setOrientation] = useState<'white' | 'black'>('white')
+  const [aiColor, setAiColor] = useState<'w' | 'b' | null>(null)
 
+  // Status do jogo
   const getGameStatus = () => {
     if (game.isGameOver()) {
-      if (game.isCheckmate()) return "Checkmate!";
-      if (game.isDraw()) return "Draw!";
-      if (game.isStalemate()) return "Stealmate!";
-
-      return "Game Over!"
+      if (game.isCheckmate()) return 'Checkmate!'
+      if (game.isDraw()) return 'Draw!'
+      if (game.isStalemate()) return 'Stalemate!'
+      return 'Game Over!'
     }
 
-    if (game.inCheck()) return "Check!";
-
-    return `${game.turn() === 'w' ? 'White' : 'Black'} to move`;
+    if (game.inCheck()) return 'Check!'
+    return `${game.turn() === 'w' ? 'White' : 'Black'} to move`
   }
 
+  // Fazer movimento do jogador
   const makeMove = (from: string, to: string) => {
     try {
-      const move = game.move({
+      const gameCopy = new Chess(game.fen())
+      const move = gameCopy.move({
         from,
         to,
-        promotion: "q",
-      });
+        promotion: 'q',
+      })
 
       if (move) {
-        setGame(new Chess(game.fen()));
-        setMoveLog(prev => [...prev, move.san]);
-        return true;
+        setGame(gameCopy)
+        setMoveLog(prev => [...prev, move.san])
+        return true
       }
 
-      return false;
+      return false
     } catch (e) {
-      console.error("Invalid move:", e);
-      return false;
+      console.error('Invalid move:', e)
+      return false
     }
-  };
+  }
 
+  // Fazer movimento da IA
+  const makeAiMove = () => {
+    // Criar cópia do jogo
+    const gameCopy = new Chess(game.fen())
+    
+    // Fazer movimento aleatório
+    const moveSan = makeRandomMove(gameCopy)
+    
+    if (moveSan) {
+      setGame(gameCopy)
+      setMoveLog(prev => [...prev, moveSan])
+    }
+  }
+
+  // Reset do jogo
   const resetGame = () => {
-    console.log("RESET GAME CALLED");
-    setGame(new Chess());
-    setMoveLog([]);
+    const newGame = new Chess()
+    const newOrientation = Math.random() < 0.5 ? 'white' : 'black'
+    
+    setGame(newGame)
+    setMoveLog([])
+    setOrientation(newOrientation)
+    
+    // Se o jogador for preto, IA joga primeiro (brancas)
+    setAiColor(newOrientation === 'black' ? 'w' : 'b')
+  }
 
-     setOrientation(Math.random() < 0.5 ? 'white' : 'black');
-  };
+  // UseEffect para IA jogar automaticamente
+  useEffect(() => {
+    // Se for a vez da IA e o jogo não acabou
+    if (aiColor && game.turn() === aiColor && !game.isGameOver()) {
+      // Delay de 500ms para parecer mais natural
+      const timer = setTimeout(() => {
+        makeAiMove()
+      }, 500)
 
+      return () => clearTimeout(timer)
+    }
+  }, [game.fen(), aiColor]) // Reage a mudanças no FEN
+
+  // Inicializar no mount
+  useEffect(() => {
+    const initialOrientation = Math.random() < 0.5 ? 'white' : 'black'
+    setOrientation(initialOrientation)
+    setAiColor(initialOrientation === 'black' ? 'w' : 'b')
+
+    // Se jogador for preto, IA joga primeiro
+    if (initialOrientation === 'black') {
+      setTimeout(() => {
+        makeAiMove()
+      }, 500)
+    }
+  }, []) // Apenas no mount
 
   return {
     game,
     moveLog,
-
     orientation,
-
+    aiColor,
     getGameStatus,
     makeMove,
-    resetGame
+    resetGame,
   }
-
-  // const [position, setPosition] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
-  // const [moveHistory, setMoveHistory] = useState<string[]>([]);
-  // const [gameStatus, setGameStatus] = useState('active');
-  // const [orientation, setOrientation] = useState<'white' | 'black'>('white');
-
-  // // Função para atualizar status após movimento
-  // const updateGameStatus = useCallback((gameInstance: Chess) => {
-  //   if (gameInstance.isCheckmate()) {
-  //     setGameStatus('checkmate');
-  //   } else if (gameInstance.isCheck()) {
-  //     setGameStatus('check');
-  //   } else if (gameInstance.isDraw()) {
-  //     setGameStatus('draw');
-  //   } else if (gameInstance.isStalemate()) {
-  //     setGameStatus('stalemate');
-  //   } else {
-  //     setGameStatus('active');
-  //   }
-  // }, []);
-
-  // // makeMove: Tenta fazer um movimento
-  // const makeMove = useCallback((from: string, to: string, promotion?: string) => {
-  //   const gameCopy = new Chess(game.fen());
-
-  //   let move: Move | null = null;
-  //   try {
-  //     move = gameCopy.move({
-  //       from,
-  //       to,
-  //       promotion: promotion || 'q' // Promoção padrão para Rainha
-  //     });
-  //     console.log("deu certo");
-  //   } catch (error) {
-  //       console.log("deu errado: ", error);
-  //       return false; // Movimento inválido
-  //   }
-
-  //   if (move === null) {
-  //       console.log("deu certo2");
-  //       return false; // Movimento inválido
-  //   }
-  //   console.log("deu errado2");
-
-  //   // Movimento válido! Atualizar estado
-  //   setGame(gameCopy); // ✅ Atualizar instância do jogo
-  //   setPosition(gameCopy.fen()); // ✅ Atualizar FEN
-  //   setMoveHistory(gameCopy.history()); // ✅ Atualizar histórico
-  //   updateGameStatus(gameCopy); // ✅ Atualizar status
-
-  //   return true;
-  // }, [game, updateGameStatus]);
-
-  // // undoMove: Desfaz último movimento
-  // const undoMove = useCallback(() => {
-  //   const gameCopy = new Chess(game.fen());
-  //   const move = gameCopy.undo();
-
-  //   if (move) {
-  //     setGame(gameCopy);
-  //     setPosition(gameCopy.fen());
-  //     setMoveHistory(gameCopy.history());
-  //     updateGameStatus(gameCopy);
-  //     return true;
-  //   }
-
-  //   return false;
-  // }, [game, updateGameStatus]);
-
-  // // resetGame: Reinicia o jogo
-  // const resetGame = useCallback(() => {
-  //   const newGame = new Chess();
-  //   setGame(newGame);
-  //   setPosition(newGame.fen());
-  //   setMoveHistory([]);
-  //   setGameStatus('active');
-  // }, []);
-
-  // // flipBoard: Inverte orientação
-  // const flipBoard = useCallback(() => {
-  //   setOrientation(prev => prev === 'white' ? 'black' : 'white');
-  // }, []);
-
-  // return {
-  //   game,
-  //   position,
-  //   moveHistory,
-  //   gameStatus,
-  //   orientation,
-  //   makeMove,
-  //   undoMove,
-  //   resetGame,
-  //   flipBoard,
-  // };
-};
+}
