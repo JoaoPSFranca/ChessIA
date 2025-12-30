@@ -28,7 +28,7 @@ npm run dev
 ## Development Roadmap
 
 - [x] Phase 1: Visual board with animations
-- [ ] Phase 2: Complete chess rules engine
+- [X] Phase 2: Complete chess rules engine
 - [ ] Phase 3: Static position evaluation
 - [ ] Phase 4: Minimax search algorithm
 - [ ] Phase 5: Move classification system
