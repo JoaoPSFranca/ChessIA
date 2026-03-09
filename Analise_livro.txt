@@ -1,0 +1,7 @@
+pontos importantes para analisar cada posição:
+	1. Relação material, isto é, igualdade material ou superioridade material de um lado
+	2. O poder de cada peça
+	3. A qualidade de cada peão
+	4. A posição dos peões, isto é, sua estrutura
+	5. A posição dos reis
+	6. Cooperação entre peças e peões

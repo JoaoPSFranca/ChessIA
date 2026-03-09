@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Chess } from 'chess.js'
-import { makeRandomMove } from './useEngine'
+import { makeOponentMove } from './useEngine'
 
 export const useChessGame = () => {
   const [game, setGame] = useState(new Chess())
@@ -50,7 +50,7 @@ export const useChessGame = () => {
     const gameCopy = new Chess(game.fen())
     
     // Fazer movimento aleatório
-    const moveSan = makeRandomMove(gameCopy)
+    const moveSan = makeOponentMove(gameCopy)
     
     if (moveSan) {
       setGame(gameCopy)

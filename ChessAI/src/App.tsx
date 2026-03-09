@@ -6,7 +6,7 @@ import { useChessGame } from './hooks/useChessGame'
 import { Toast } from './components/Toast'
 
 function App() {
-  const { game, moveLog, orientation, getGameStatus, makeMove, resetGame } = useChessGame();
+  const { game, moveLog, orientation, getGameStatus, makeMove, resetGame } = useChessGame();  
   
   // Estados para click-to-move
   const [selectedSquare, setSelectedSquare] = useState<Square | undefined>(undefined)
